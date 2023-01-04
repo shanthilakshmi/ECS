@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  mysql-development:
+    image: mysql:8.0.17
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: mydb
+    ports:
+      - "3306:3306"
+    networks:
+      - custom-nw
+  frontend:
+    build: ./frontend-html
+    depends_on:
+      - "backend"
+    command: [ "python3", "front.py" ]
+    ports:
+      - "5001:5001"
+    networks:
+      - custom-nw
+
+  backend:
+    build: ./backend-flask
+    depends_on:
+      - "mysql-development"
+    command: [ "python3", "backend.py" ]
+    ports:
+      - "5000:5000"
+    networks:
+      -  custom-nw
+networks:
+  custom-nw:
+    name: custom-nw
+    external: true
